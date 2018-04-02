@@ -45,10 +45,10 @@
         {#      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">#}
         {#              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>#}
         {% if user.is_authenticated %}
-            <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'logout' %}">login</a>
+            <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'logout' %}">logout</a>
             {% if user.is_superuser %}
-            <a class="btn btn-outline-success my-2 my-sm-0" href="/admin/">admin</a>
-                {% endif %}
+                <a class="btn btn-outline-success my-2 my-sm-0" href="/admin/">admin</a>
+            {% endif %}
         {% else %}
             <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'login' %}">login</a>
         {% endif %}

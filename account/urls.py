@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.urls import path, include
 from account import views
+from django.contrib.auth.views import logout
 
 urlpatterns = [
     path('login/', views.login, name='login'),
-    path('logout/', views.logout, name='logout'),
+    path('logout/', logout, {'next_page': '/'}, name='logout'),
 ]
