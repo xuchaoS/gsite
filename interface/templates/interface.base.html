@@ -10,14 +10,18 @@
     <div class="container-fluid">
 
         <div class="row">
-            <div class="col-1 bg-dark offset-md-0 navbar-dark">
-                <div class="nav-link active">
-                    <a href="#">test</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="#">test</a>
-                </div>
-            </div>
+        <div class="col-1 bg-secondary sticky-top">
+            <nav class="navbar navbar-dark">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a href="#" class="nav-link">测试用例</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">接口管理</a>
+                </li>
+            </ul>
+            </nav>
+        </div>
             <div class="col-11 jumbotron">
                 <div class="text-center">
                     {% block content %}
@@ -27,4 +31,5 @@
         </div>
 
     </div>
+
 {% endblock %}
