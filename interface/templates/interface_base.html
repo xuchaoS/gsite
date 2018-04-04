@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block interface %}active{% endblock %}
+
+{% block body %}
+    <div class="col-2">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% block testcase %}{% endblock %}" href="{% url 'interface' %}">测试用例</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% block result %}{% endblock %}" href="#">执行结果</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-10">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+
+{% endblock %}

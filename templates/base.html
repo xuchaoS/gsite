@@ -6,58 +6,73 @@
     {% load staticfiles %}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
 </head>
-<body class="bg-light">
-<nav class="navbar sticky-top navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="{% url 'home' %}">Gsite</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            {% block home %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">首页</a>
-                </li>
-            {% endblock %}
-            {% block interface %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'interface' %}">接口测试</a>
-                </li>
-            {% endblock %}
-            {#      <li class="nav-item dropdown">#}
-            {#        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
-            {#          Dropdown#}
-            {#        </a>#}
-            {#        <div class="dropdown-menu" aria-labelledby="navbarDropdown">#}
-            {#          <a class="dropdown-item" href="#">Action</a>#}
-            {#          <a class="dropdown-item" href="#">Another action</a>#}
-            {#          <div class="dropdown-divider"></div>#}
-            {#          <a class="dropdown-item" href="#">Something else here</a>#}
-            {#        </div>#}
-            {#      </li>#}
-            {#      <li class="nav-item">#}
-            {#        <a class="nav-link disabled" href="#">Disabled</a>#}
-            {#      </li>#}
-        </ul>
-        {#    <form class="form-inline my-2 my-lg-0">#}
-        {#      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">#}
-        {#              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>#}
-        {% if user.is_authenticated %}
-            <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'logout' %}">logout</a>
-            {% if user.is_superuser %}
-                <a class="btn btn-outline-success my-2 my-sm-0" href="/admin/">admin</a>
-            {% endif %}
-        {% else %}
-            <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'login' %}">login</a>
-        {% endif %}
-        {#    </form>#}
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="{% url 'home' %}">Gsite</a>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item {% block home %}{% endblock %}">
+                        <a class="nav-link" href="{% url 'home' %}">首页</a>
+                    </li>
+                    <li class="nav-item {% block interface %}{% endblock %}">
+                        <a class="nav-link" href="{% url 'interface' %}">接口测试</a>
+                    </li>
+                </ul>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-danger" href="{% url 'logout' %}">退出</a>
+                    {% if user.is_superuser %}
+                        <a class="btn btn-primary carousel-item-right" href="/admin/" target="view_window">admin</a>
+                    {% endif %}
+                {% else %}
+                    <a id="modal-login" href="#modal-container-login" role="button" class="btn btn-success"
+                       data-toggle="modal">登录</a>
+                    <div class="modal fade" id="modal-container-login" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="myModalLabel">登录</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <form method="post" action="{% url 'login' %}" role="form">
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="id_username">用户名:</label>
+                                            <input type="text" name="username" placeholder="用户名"
+                                                   class="form-control" required id="id_username"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="id_password">密码:</label>
+                                            <input type="password" name="password" placeholder="密码"
+                                                   class="form-control" required id="id_password"/>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">登录</button>
+                                        <button type="reset" class="btn btn-danger">重置</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </nav>
+        </div>
     </div>
-</nav>
-{% block body %}{% endblock %}
+    <div class="row">
+        {% block body %}{% endblock %}
+    </div>
+</div>
 <script src="{% static 'jquery-3.3.1.slim.min.js' %}"></script>
 <script src="{% static 'popper.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
+
