@@ -4,5 +4,9 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 @login_required
-def index(request):
+def testcase(request):
     return render(request, 'testcase.html')
+
+@login_required
+def api_management(request):
+    return render(request, 'api_management.html')

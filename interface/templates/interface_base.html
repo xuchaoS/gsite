@@ -9,13 +9,15 @@
                 <a class="nav-link {% block testcase %}{% endblock %}" href="{% url 'interface' %}">测试用例</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% block result %}{% endblock %}" href="#">执行结果</a>
+                <a class="nav-link {% block api_management %}{% endblock %}" href="{% url 'api_management' %}">接口管理</a>
             </li>
         </ul>
     </div>
     <div class="col-10">
-        {% block content %}
-        {% endblock %}
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 
 
