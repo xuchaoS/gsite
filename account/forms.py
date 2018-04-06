@@ -11,6 +11,7 @@ from django import forms
 class LoginForm(forms.Form):
     username = forms.CharField(
         required=True,
+        max_length=50,
         label="用户名",
         error_messages={'required': '请输入用户名'},
         widget=forms.TextInput(
@@ -22,6 +23,7 @@ class LoginForm(forms.Form):
     )
     password = forms.CharField(
         required=True,
+        max_length=50,
         label="密码",
         error_messages={'required': '请输入密码'},
         widget=forms.PasswordInput(
@@ -34,7 +36,7 @@ class LoginForm(forms.Form):
 
     def clean(self):
         if not self.is_valid():
-            raise forms.ValidationError(u"用户名和密码为必填项")
+            raise forms.ValidationError("用户名和密码为必填项")
         else:
             cleaned_data = super(LoginForm, self).clean()
 

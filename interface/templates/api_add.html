@@ -1,0 +1,44 @@
+{% extends 'interface_base.html' %}
+
+{% block api_management %}active{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12 jumbotron">
+            <h5>{% block header %}添加{% endblock %}</h5>
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                </div>
+                <div class="form-group">
+                    {{ form.ip.label_tag }}
+                    {{ form.ip }}
+                    <div class="text-danger">{{ form.ip.errors }}</div>
+                </div>
+                <div class="form-group">
+                    {{ form.port.label_tag }}
+                    {{ form.port }}
+                    <div class="text-danger">{{ form.port.errors }}</div>
+                </div>
+                <div class="form-group">
+                    {{ form.paths.label_tag }}
+                    {{ form.paths }}
+                    <div class="text-danger">{{ form.paths.errors }}</div>
+                </div>
+                <div class="form-group">
+                    {{ form.note.label_tag }}
+                    {{ form.note }}
+                    <div class="text-danger">{{ form.note.errors }}</div>
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+                <button type="reset" class="btn btn-danger">重置</button>
+                <a href="{% url 'api_management' %}">
+                    <button type="button" class="btn btn-secondary">取消</button>
+                </a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

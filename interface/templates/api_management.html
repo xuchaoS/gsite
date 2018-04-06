@@ -5,11 +5,13 @@
 {% block content %}
     <div class="row">
         <div class="col-md-2">
-            <button class="btn btn-success text-white" type="button" onclick="window.location.href='{% url api_add %}'">添加</button>
+            <button class="btn btn-success text-white" type="button"
+                    onclick="window.location.href='{% url 'api_add' %}'">添加
+            </button>
         </div>
         <div class="col-md-10 text-right">
             <form class="form-inline">
-                <input class="form-control mr-sm-2" type="text" name="keyword"/>
+                <input class="form-control mr-sm-2" type="text" name="keyword" value="{{ keyword }}"/>
                 <button class="btn btn-primary my-2 my-sm-0" type="submit">
                     搜索
                 </button>
@@ -25,7 +27,7 @@
                         #
                     </th>
                     <th>
-                        接口名称
+                        名称
                     </th>
                     <th>
                         IP
@@ -42,69 +44,109 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>
-                        1
-                    </td>
-                    <td>
-                        TB - Monthly
-                    </td>
-                    <td>
-                        01/04/2012
-                    </td>
-                    <td>
-                        Default
-                    </td>
-                    <td>
-                        Default
-                    </td>
-                    <td>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <a id="api-detail1" href="#api-detail1-container" role="button" class="btn btn-info"
-                               data-toggle="modal">详情</a>
-                            <div class="modal fade" id="api-detail1-container" role="dialog" aria-labelledby="myModalLabel"
-                                 aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="myModalLabel">详情</h5>
-                                            <button type="button" class="close" data-dismiss="modal">
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-                                        </div>
-                                        <form method="post" action="{% url 'login' %}" role="form">
+                {% for api in apis %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {{ api.name }}
+                        </td>
+                        <td>
+                            {{ api.ip }}
+                        </td>
+                        <td>
+                            {{ api.port }}
+                        </td>
+                        <td>
+                            {{ api.note }}
+                        </td>
+                        <td>
+{#                            <div class="btn-group btn-group-sm" role="group">#}
+                                <a id="api-detail-{{ forloop.counter }}" href="#api-detail-{{ forloop.counter }}-container" role="button" class="btn btn-info btn-sm"
+                                   data-toggle="modal">详情</a>
+                                <div class="modal fade" id="api-detail-{{ forloop.counter }}-container" role="dialog"
+                                     aria-labelledby="myModalLabel"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="myModalLabel">详情</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
                                             <div class="modal-body">
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    <label for="id_username">用户名:</label>
-                                                    <input type="text" name="username" placeholder="用户名"
-                                                           class="form-control" required id="id_username"/>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="id_password">密码:</label>
-                                                    <input type="password" name="password" placeholder="密码"
-                                                           class="form-control" required id="id_password"/>
-                                                </div>
+                                                <form role="form">
+                                                    <div class="form-group">
+                                                        <label for="id_name_{{ forloop.counter }}">名称</label>
+                                                        <input type="text" value="{{ api.name }}" class="form-control"
+                                                               disabled id="id_name_{{ forloop.counter }}"/>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="id_ip_{{ forloop.counter }}">IP</label>
+                                                        <input type="text" value="{{ api.ip }}" class="form-control"
+                                                               disabled id="id_ip_{{ forloop.counter }}"/>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="id_port_{{ forloop.counter }}">端口号</label>
+                                                        <input type="text" value="{{ api.port }}" class="form-control"
+                                                               disabled id="id_port_{{ forloop.counter }}"/>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="id_paths_{{ forloop.counter }}">接口路径</label>
+                                                        <textarea class="form-control" disabled
+                                                                  id="id_paths_{{ forloop.counter }}">{{ api.paths }}</textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="id_note_{{ forloop.counter }}">备注</label>
+                                                        <textarea class="form-control" disabled
+                                                                  id="id_note_{{ forloop.counter }}">{{ api.note }}</textarea>
+                                                    </div>
+                                                </form>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-primary" data-dismiss="modal">确定
                                                 </button>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-primary" type="button"
-                                    onclick="window.location.href='{% url 'home' %}'">
-                                编辑
-                            </button>
-                            <button class="btn btn-danger" type="button"
-                                    onclick="window.location.href='{% url 'home' %}'">
-                                删除
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                                <button class="btn btn-primary btn-sm" type="button"
+                                        onclick="window.location.href='{% url 'api_edit' id=api.id %}'">
+                                    编辑
+                                </button>
+                                <a id="api-del-{{ api.id }}" href="#api-del-{{ api.id }}-container" role="button" class="btn btn-danger btn-sm"
+                                   data-toggle="modal">删除</a>
+                                <div class="modal fade" id="api-del-{{ api.id }}-container" role="dialog"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">删除</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <form role="form" method="post" action="{% url 'api_del' id=api.id %}">
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                <div class="text-center text-danger">正在删除 {{ api.name }}，删除后无法恢复，是否确定？</div>
+                                                <input type="hidden" name="id" value="{{ api.id }}" />
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-danger">确定</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                                                </button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+{#                            </div>#}
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>

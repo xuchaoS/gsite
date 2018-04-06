@@ -18,5 +18,8 @@ from interface import views
 
 urlpatterns = [
     path('testcase/', views.testcase, name='interface'),
-    path('api_management', views.api_management, name='api_management')
+    path('api/', views.api_management, name='api_management'),
+    path('api/add', views.add_api, name='api_add'),
+    path('api/edit/<int:id>', views.edit_api, name='api_edit'),
+    path('api/del/<int:id>', views.del_api, name='api_del'),
 ]
