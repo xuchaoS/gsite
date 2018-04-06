@@ -2,4 +2,60 @@
 
 {% block testcase %}active{% endblock %}
 
-{% block content %}interface{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-8">
+            <div class="row">
+                    <button class="btn btn-success text-white" type="button"
+                            onclick="window.location.href='{% url 'api_add' %}'">新建测试套件
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle" type="button" id="testsuite"
+                                data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            {% if suite %}{{ suite.name }}{% else %}请选择测试套件{% endif %}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="testsuite">
+                            <a class="dropdown-item" href="{% url 'interface' %}">请选择测试套件...</a>
+                            {% for s in suite_list %}
+                                <a class="dropdown-item" href="{% url 'interface'%}?suite={{ s.id }}">{{ s.name }}</a>
+                        {% endfor %}
+                        </div>
+                    </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark dropdown-toggle{% if not case_list %} disabled{% endif %}" type="button" id="testcase"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {% if case %}{{ case.name }}{% else %}请选择测试用例{% endif %}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="testcase">
+                        <a class="dropdown-item" href="{% url 'interface' %}?suite={{ suite.id }}">请选择测试用例...</a>
+                        {% for c in case_list %}
+                            <a class="dropdown-item" href="{% url 'interface'%}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
+                        {% endfor %}
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
+                <button class="btn btn-success text-white" type="button"
+                        onclick="window.location.href='{% url 'api_add' %}'">新建测试用例
+                </button>
+            </div>
+        </div>
+        <div class="col-4">
+            <div id="card-api">
+                {% for api in apis %}
+				<div class="card">
+					<div class="card-header">
+						 <a class="card-link" data-toggle="collapse" data-parent="#card-api" href="#card-element-{{ api.id }}">{{ api.name }}---{{ api.ip }}:{{ api.port }}</a>
+					</div>
+					<div id="card-element-{{ api.id }}" class="collapse">
+						<div class="card-block">
+							{{ api.paths }}
+						</div>
+					</div>
+				</div>
+                {% endfor %}
+			</div>
+        </div>
+    </div>
+{% endblock %}

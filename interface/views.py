@@ -1,13 +1,25 @@
 from django.shortcuts import render, redirect, Http404
 from django.contrib.auth.decorators import login_required
 from .forms import ApiForm
-from .models import Api
+from .models import Api, TestCase, TestSuite
 
 # Create your views here.
 
 @login_required
 def testcase(request):
-    return render(request, 'testcase.html')
+    api = request.GET.get('api', '')
+    apis = Api.objects.filter(name__contains=api)
+    data = {'apis': apis}
+    data['suite_list'] = TestSuite.objects.all()
+    suite_id = request.GET.get('suite', '')
+    if suite_id:
+        data['suite'] = TestSuite.objects.get(id=int(suite_id))
+        case_list = TestCase.objects.filter(suite=data['suite'])
+        data['case_list'] = case_list
+        case_id = request.GET.get('case', '')
+        if case_id:
+            data['case'] = case_list.get(id=int(case_id))
+    return render(request, 'testcase.html', data)
 
 @login_required
 def api_management(request):
