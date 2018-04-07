@@ -1,14 +1,11 @@
 {% extends 'interface_base.html' %}
 
-{% block testcase %}active{% endblock %}
+{% block test_case %}active{% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-8">
             <div class="row">
-                    <button class="btn btn-success text-white" type="button"
-                            onclick="window.location.href='{% url 'api_add' %}'">新建测试套件
-                    </button>
                     <div class="dropdown">
                         <button class="btn btn-outline-dark dropdown-toggle" type="button" id="testsuite"
                                 data-toggle="dropdown"
@@ -32,12 +29,10 @@
                         {% for c in case_list %}
                             <a class="dropdown-item" href="{% url 'interface'%}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
                         {% endfor %}
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </div>
                 <button class="btn btn-success text-white" type="button"
-                        onclick="window.location.href='{% url 'api_add' %}'">新建测试用例
+                        onclick="window.location.href='{% url 'case_add' %}{% if suite %}?suite={{ suite.id }}{% endif %}'">新建用例
                 </button>
             </div>
         </div>

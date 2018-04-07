@@ -6,7 +6,10 @@
     <div class="col-2">
         <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-                <a class="nav-link {% block testcase %}{% endblock %}" href="{% url 'interface' %}">测试用例</a>
+                <a class="nav-link {% block test_case %}{% endblock %}" href="{% url 'interface' %}">测试用例</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% block test_suite %}{% endblock %}" href="{% url 'suite_management' %}">测试套件</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {% block api_management %}{% endblock %}" href="{% url 'api_management' %}">接口管理</a>

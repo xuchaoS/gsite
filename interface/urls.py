@@ -17,7 +17,15 @@ from django.urls import path, include
 from interface import views
 
 urlpatterns = [
-    path('', views.testcase, name='interface'),
+    path('', views.case_management, name='interface'),
+    path('suite/', views.suite_management, name='suite_management'),
+    path('suite/add', views.add_suite, name='suite_add'),
+    path('suite/edit/<int:id>', views.edit_suite, name='suite_edit'),
+    path('suite/del/<int:id>', views.del_suite, name='suite_del'),
+    path('case/', views.case_management, name='case_management'),
+    path('case/add', views.add_case, name='case_add'),
+    path('case/edit/<int:id>', views.edit_case, name='case_edit'),
+    path('case/del/<int:id>', views.del_case, name='case_del'),
     path('api/', views.api_management, name='api_management'),
     path('api/add', views.add_api, name='api_add'),
     path('api/edit/<int:id>', views.edit_api, name='api_edit'),
