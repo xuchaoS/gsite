@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-12 jumbotron">
             <h5>{% block header %}添加{% endblock %}</h5>
-            {% if form.errors %}
+            {% if form.non_field_errors %}
             <div class="alert alert-error alert-danger">
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 {{ form.non_field_errors }}

@@ -7,6 +7,18 @@ Created Time: 2018/4/6 下午3:24
 """
 from django import forms
 from .models import Api, TestCase, TestSuite
+import json
+
+
+def clean_json(field):
+    def wrapper(self):
+        value = self.cleaned_data[field]
+        try:
+            j = json.loads(value)
+        except json.JSONDecodeError as e:
+            raise forms.ValidationError('json格式不正确：%s' % e, code='json')
+        return json.dumps(j)
+    return wrapper
 
 
 class ApiForm(forms.ModelForm):
@@ -35,6 +47,10 @@ class ApiForm(forms.ModelForm):
                 'class': 'form-control'
             }),
         }
+
+    clean_paths = clean_json('paths')
+
+
 
 
 class SuiteForm(forms.ModelForm):
@@ -76,6 +92,8 @@ class CaseForm(forms.ModelForm):
             }),
         }
         error_messages = {'__all__':{'unique_together': '套件中已经存在相同名称的用例'}}
+
+    clean_content = clean_json('content')
 
 
 if __name__ == '__main__':

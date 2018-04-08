@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect, Http404, reverse
+from django.shortcuts import render, redirect, Http404, reverse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from .forms import ApiForm, SuiteForm, CaseForm
 from .models import Api, TestCase, TestSuite
+import requests
+import json
 
 
 # Create your views here.
@@ -23,7 +25,7 @@ def case_management(request):
             if request.method == 'GET':
                 form = CaseForm(instance=case)
             else:
-                form = CaseForm(request.POST)
+                form = CaseForm(request.POST, instance=case)
                 if form.is_valid():
                     form.save()
             data['form'] = form
@@ -164,3 +166,43 @@ def del_suite(request, id):
         raise Http404
     TestSuite.delete(TestSuite.objects.get(id=id))
     return redirect('suite_management')
+
+@login_required
+def exec_case(request, id):
+    case = TestCase.objects.get(id=id)
+    content = json.loads(case.content)
+    try:
+        for step in content:
+            api = step['api']
+            path = step['path']
+            header = step['header']
+            data = step['data']
+            expect = step['expect']
+            api = Api.objects.get(name=api)
+            api_path = json.loads(api.paths)[path]
+            url = 'http://%s:%d%s' % (api.ip, api.port, api_path['path'])
+            method = api_path['method'].lower()
+            if method == 'get':
+                res = requests.get(url, data, headers=header)
+            elif method == 'post':
+                res = requests.post(url, data, headers=header)
+            for key, value in expect.items():
+                assert res.json()[key] == value
+    except Exception as e:
+        import traceback
+        return HttpResponse(str(traceback.format_exc()).encode() + b'\nfailed')
+    else:
+        return HttpResponse(b'success')
+
+
+
+
+def test(request):
+    try:
+        a = int(request.GET.get('a'))
+        b = int(request.GET.get('b'))
+        r = a + b
+        ret = {'result': r, 'err_code': 0}
+    except Exception:
+        return HttpResponse(b'{err_code: -1}')
+    return HttpResponse(json.dumps(ret).encode())

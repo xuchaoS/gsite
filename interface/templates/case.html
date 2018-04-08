@@ -10,44 +10,86 @@
                     <div class="row">
                         <div class="col-2">
                             <button class="btn btn-success text-white" type="button"
-                                    onclick="window.location.href='
-                                            {% url 'case_add' %}{% if suite %}?suite={{ suite.id }}{% endif %}'">新建用例
+                                    onclick="window.location.href='{% url 'case_add' %}{% if suite %}?suite={{ suite.id }}{% endif %}'">新建用例
                             </button>
                         </div>
-                    <div class="col-3">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="testsuite"
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                {% if suite %}{{ suite.name }}{% else %}请选择测试套件{% endif %}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="testsuite">
-                                <a class="dropdown-item" href="{% url 'interface' %}">请选择测试套件...</a>
-                                {% for s in suite_list %}
-                                    <a class="dropdown-item"
-                                       href="{% url 'interface' %}?suite={{ s.id }}">{{ s.name }}</a>
-                                {% endfor %}
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-dark dropdown-toggle" type="button" id="testsuite"
+                                            data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                        {% if suite %}{{ suite.name }}{% else %}请选择测试套件{% endif %}
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="testsuite">
+                                        <a class="dropdown-item" href="{% url 'interface' %}">请选择测试套件...</a>
+                                        {% for s in suite_list %}
+                                            <a class="dropdown-item"
+                                               href="{% url 'interface' %}?suite={{ s.id }}">{{ s.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-dark dropdown-toggle{% if not case_list %} disabled{% endif %}"
+                                            type="button" id="testcase"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {% if case %}{{ case.name }}{% else %}请选择测试用例{% endif %}
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="testcase">
+                                        <a class="dropdown-item"
+                                           href="{% url 'interface' %}?suite={{ suite.id }}">请选择测试用例...</a>
+                                        {% for c in case_list %}
+                                            <a class="dropdown-item"
+                                               href="{% url 'interface' %}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle{% if not case_list %} disabled{% endif %}"
-                                    type="button" id="testcase"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {% if case %}{{ case.name }}{% else %}请选择测试用例{% endif %}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="testcase">
-                                <a class="dropdown-item"
-                                   href="{% url 'interface' %}?suite={{ suite.id }}">请选择测试用例...</a>
-                                {% for c in case_list %}
-                                    <a class="dropdown-item"
-                                       href="{% url 'interface' %}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
-                                {% endfor %}
-                            </div>
+                        <div class="col-2 text-right">
+                            <a id="case-del" href="#case-del-container" role="button"
+                               class="btn btn-danger{% if not case %} disabled{% endif %}"{% if not case %}
+                               disabled{% endif %}
+                               data-toggle="modal">删除</a>
+                            {% if case %}
+                                <div class="modal fade" id="case-del-container" role="dialog"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">删除</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <form role="form" method="post"
+                                                  action="{% url 'case_del' id=case.id %}">
+                                                <div class="modal-body">
+                                                    {% csrf_token %}
+                                                    <div class="text-center text-danger">
+                                                        正在删除{{ suite }}下的{{ case.name }}，删除后无法恢复，是否确定？
+                                                    </div>
+                                                    <input type="hidden" name="id" value="{{ case.id }}"/>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-danger">确定</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">取消
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            {% endif %}
+
                         </div>
                     </div>
-                    </div>
+
+                    <br>
 
 
                     <div class="row">
@@ -57,6 +99,10 @@
                                 <div class="col-8">
                                     <div class="form-group">
                                         {% if form %}
+                                            <div class="hidden" hidden>
+                                                {{ form.name }}
+                                                {{ form.suite }}
+                                            </div>
                                             {{ form.content.label_tag }}
                                             <button type="button" class="btn btn-success btn-sm"
                                                     onclick="format_json()">验证并格式化
@@ -93,12 +139,12 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-12">
+                                <div class="col-8">
                                     <button type="submit" class="btn btn-primary"{% if not case %} disabled{% endif %}>
                                         保存
                                     </button>
                                     <button class="btn btn-success" type="button"{% if not case %} disabled{% endif %}
-                                            onclick="window.location.href='#'">
+                                            onclick="window.location.href='{% if case %}{% url 'exec_case' id=case.id %}{% endif %}'">
                                         执行
                                     </button>
                                     <button type="reset" class="btn btn-dark"{% if not case %} disabled{% endif %} >重置
@@ -110,47 +156,6 @@
                         </form>
                     </div>
                     <div class="row">
-                    <div class="col-2 mr-md-0">
-                        <a id="case-del" href="#case-del-container" role="button"
-                           class="btn btn-danger{% if not case %} disabled{% endif %}"{% if not case %}
-                           disabled{% endif %}
-                           data-toggle="modal">删除</a>
-                        {% if case %}
-
-                            <div class="modal fade" id="case-del-container" role="dialog"
-                                 aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">删除</h5>
-                                            <button type="button" class="close" data-dismiss="modal">
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-                                        </div>
-                                        <form role="form" method="post"
-                                              action="{% url 'case_del' id=case.id %}">
-                                            <div class="modal-body">
-                                                {% csrf_token %}
-                                                <div class="text-center text-danger">正在删除 {{ case.name }}，删除后无法恢复，是否确定？
-                                                </div>
-                                                <input type="hidden" name="id" value="{{ case.id }}"/>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-danger">确定</button>
-                                                <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">取消
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-                        {% endif %}
-
-                    </div>
                     </div>
                 {% endblock %}
             </div>

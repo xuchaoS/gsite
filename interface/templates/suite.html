@@ -53,7 +53,7 @@
                             {{ suite.note }}
                         </td>
                         <td>
-                            用例数
+                            {{ suite.testcase_set.count }}
                         </td>
                         <td>
                             <a id="suite-detail-{{ forloop.counter }}" href="#suite-detail-{{ forloop.counter }}-container"
