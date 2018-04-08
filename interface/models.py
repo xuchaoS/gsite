@@ -25,7 +25,7 @@ class TestSuite(models.Model):
 class TestCase(models.Model):
     name = models.CharField(max_length=50)
     suite = models.ForeignKey(TestSuite, on_delete=models.CASCADE)
-    content = models.TextField(default='[\n    {\n    }\n]')
+    content = models.TextField(default='[{}]')
     note = models.TextField(blank=True)
 
     class Meta:

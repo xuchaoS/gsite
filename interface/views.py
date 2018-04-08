@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, Http404
+from django.shortcuts import render, redirect, Http404, reverse
 from django.contrib.auth.decorators import login_required
 from .forms import ApiForm, SuiteForm, CaseForm
 from .models import Api, TestCase, TestSuite
@@ -8,8 +8,7 @@ from .models import Api, TestCase, TestSuite
 
 @login_required
 def case_management(request):
-    api = request.GET.get('api', '')
-    apis = Api.objects.filter(name__contains=api)
+    apis = Api.objects.all()
     data = {'apis': apis}
     data['suite_list'] = TestSuite.objects.all()
     suite_id = request.GET.get('suite', '')
@@ -19,7 +18,15 @@ def case_management(request):
         data['case_list'] = case_list
         case_id = request.GET.get('case', '')
         if case_id:
-            data['case'] = case_list.get(id=int(case_id))
+            case = case_list.get(id=int(case_id))
+            data['case'] = case
+            if request.method == 'GET':
+                form = CaseForm(instance=case)
+            else:
+                form = CaseForm(request.POST)
+                if form.is_valid():
+                    form.save()
+            data['form'] = form
     return render(request, 'case.html', data)
 
 
@@ -33,27 +40,31 @@ def add_case(request):
             form = CaseForm(instance=case)
         else:
             form = CaseForm()
-        return render(request, 'case_add.html', {'form': form})
+        apis = Api.objects.all()
+        return render(request, 'case_add.html', {'form': form, 'apis': apis})
     form = CaseForm(request.POST)
     if form.is_valid():
         form.save()
-        return redirect('case_management')
+        case = TestCase.objects.get(name=form.cleaned_data['name'], suite=form.cleaned_data['suite'])
+        return redirect(reverse('case_management') + '?suite=%s&case=%s' % (case.suite.id, case.id))
     else:
-        return render(request, 'case_add.html', {'form': form})
+        apis = Api.objects.all()
+        return render(request, 'case_add.html', {'form': form, 'apis': apis})
 
 
 @login_required
 def edit_case(request, id):
-    case = TestCase.objects.get(id=id)
-    if request.method == 'GET':
-        form = CaseForm(instance=case)
-        return render(request, 'case.html', {'form': form})
-    form = CaseForm(request.POST, instance=case)
-    if form.is_valid():
-        form.save()
-        return redirect('case')
-    else:
-        return render(request, 'case.html', {'form': form})
+    # case = TestCase.objects.get(id=id)
+    # if request.method == 'GET':
+    #     form = CaseForm(instance=case)
+    #     return render(request, 'case.html', {'form': form})
+    # form = CaseForm(request.POST, instance=case)
+    # if form.is_valid():
+    #     form.save()
+    #     return redirect('case')
+    # else:
+    #     return render(request, 'case.html', {'form': form})
+    return case_management(request)
 
 
 @login_required
@@ -62,8 +73,9 @@ def del_case(request, id):
         raise Http404
     if id != int(request.POST.get('id', '0')):
         raise Http404
-    TestCase.delete(TestCase.objects.get(id=id))
-    return redirect('case_management')
+    case = TestCase.objects.get(id=id)
+    TestCase.delete(case)
+    return redirect(reverse('case_management') + '?suite=%d' % case.suite.id)
 
 
 @login_required

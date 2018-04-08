@@ -1,9 +1,15 @@
 {% extends 'case.html' %}
 
-{% block content %}
+{% block middle %}
     <div class="row">
         <div class="col-12 jumbotron">
             <h5>{% block header %}添加{% endblock %}</h5>
+            {% if form.errors %}
+            <div class="alert alert-error alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
             <form role="form" method="post">
                 {% csrf_token %}
                 <div class="form-group">
@@ -18,6 +24,7 @@
                 </div>
                 <div class="form-group">
                     {{ form.content.label_tag }}
+                    <button type="button" class="btn btn-success btn-sm" onclick="format_json()">验证并格式化</button>
                     {{ form.content }}
                     <div class="text-danger">{{ form.content.errors }}</div>
                 </div>
@@ -28,9 +35,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">保存</button>
                 <button type="reset" class="btn btn-danger">重置</button>
-                <a href="{% url 'case_management' %}">
-                    <button type="button" class="btn btn-secondary">取消</button>
-                </a>
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">取消</button>
             </form>
         </div>
     </div>

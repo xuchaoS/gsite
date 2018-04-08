@@ -28,7 +28,7 @@ class ApiForm(forms.ModelForm):
                 'class': 'form-control'
             }),
             "paths": forms.Textarea(attrs={
-                'class': 'form-control'
+                'class': 'form-control format_json'
             }),
             'note': forms.Textarea(attrs={
                 'placeholder': '请输入备注',
@@ -68,13 +68,14 @@ class CaseForm(forms.ModelForm):
                 'class': 'form-control disabled'
             }),
             "content": forms.Textarea(attrs={
-                'class': 'form-control'
+                'class': 'form-control format_json'
             }),
             'note': forms.Textarea(attrs={
                 'placeholder': '请输入备注',
                 'class': 'form-control'
             }),
         }
+        error_messages = {'__all__':{'unique_together': '套件中已经存在相同名称的用例'}}
 
 
 if __name__ == '__main__':

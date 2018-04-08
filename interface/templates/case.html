@@ -4,53 +4,174 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-8">
-            <div class="row">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-dark dropdown-toggle" type="button" id="testsuite"
-                                data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                            {% if suite %}{{ suite.name }}{% else %}请选择测试套件{% endif %}
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="testsuite">
-                            <a class="dropdown-item" href="{% url 'interface' %}">请选择测试套件...</a>
-                            {% for s in suite_list %}
-                                <a class="dropdown-item" href="{% url 'interface'%}?suite={{ s.id }}">{{ s.name }}</a>
-                        {% endfor %}
+        <div class="col-9">
+            <div class="container-fluid">
+                {% block middle %}
+                    <div class="row">
+                        <div class="col-2">
+                            <button class="btn btn-success text-white" type="button"
+                                    onclick="window.location.href='
+                                            {% url 'case_add' %}{% if suite %}?suite={{ suite.id }}{% endif %}'">新建用例
+                            </button>
+                        </div>
+                    <div class="col-3">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="testsuite"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                {% if suite %}{{ suite.name }}{% else %}请选择测试套件{% endif %}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="testsuite">
+                                <a class="dropdown-item" href="{% url 'interface' %}">请选择测试套件...</a>
+                                {% for s in suite_list %}
+                                    <a class="dropdown-item"
+                                       href="{% url 'interface' %}?suite={{ s.id }}">{{ s.name }}</a>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                <div class="dropdown">
-                    <button class="btn btn-outline-dark dropdown-toggle{% if not case_list %} disabled{% endif %}" type="button" id="testcase"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {% if case %}{{ case.name }}{% else %}请选择测试用例{% endif %}
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="testcase">
-                        <a class="dropdown-item" href="{% url 'interface' %}?suite={{ suite.id }}">请选择测试用例...</a>
-                        {% for c in case_list %}
-                            <a class="dropdown-item" href="{% url 'interface'%}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
-                        {% endfor %}
+                    <div class="col-3">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle{% if not case_list %} disabled{% endif %}"
+                                    type="button" id="testcase"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% if case %}{{ case.name }}{% else %}请选择测试用例{% endif %}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="testcase">
+                                <a class="dropdown-item"
+                                   href="{% url 'interface' %}?suite={{ suite.id }}">请选择测试用例...</a>
+                                {% for c in case_list %}
+                                    <a class="dropdown-item"
+                                       href="{% url 'interface' %}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <button class="btn btn-success text-white" type="button"
-                        onclick="window.location.href='{% url 'case_add' %}{% if suite %}?suite={{ suite.id }}{% endif %}'">新建用例
-                </button>
+                    </div>
+
+
+                    <div class="row">
+                        <form role="form" class="container-fluid" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="form-group">
+                                        {% if form %}
+                                            {{ form.content.label_tag }}
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                    onclick="format_json()">验证并格式化
+                                            </button>
+                                            {{ form.content }}
+                                            <div class="text-danger">{{ form.content.errors }}</div>
+                                        {% else %}
+                                            <label for="id_content">内容:</label>
+                                            <button type="button" class="btn btn-success btn-sm" disabled
+                                                    onclick="format_json()">验证并格式化
+                                            </button>
+                                            <textarea name="content" cols="40" rows="10" disabled
+                                                      class="form-control format_json" required
+                                                      id="id_content">[{}]</textarea>
+
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        {% if form %}
+                                            {{ form.note.label_tag }}
+                                            {{ form.note }}
+                                            <div class="text-danger">{{ form.note.errors }}</div>
+                                        {% else %}
+                                            <label for="id_note">备注:</label>
+                                            <textarea name="note" cols="40" rows="10" disabled class="form-control"
+                                                      required id="id_note"></textarea>
+
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary"{% if not case %} disabled{% endif %}>
+                                        保存
+                                    </button>
+                                    <button class="btn btn-success" type="button"{% if not case %} disabled{% endif %}
+                                            onclick="window.location.href='#'">
+                                        执行
+                                    </button>
+                                    <button type="reset" class="btn btn-dark"{% if not case %} disabled{% endif %} >重置
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="row">
+                    <div class="col-2 mr-md-0">
+                        <a id="case-del" href="#case-del-container" role="button"
+                           class="btn btn-danger{% if not case %} disabled{% endif %}"{% if not case %}
+                           disabled{% endif %}
+                           data-toggle="modal">删除</a>
+                        {% if case %}
+
+                            <div class="modal fade" id="case-del-container" role="dialog"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">删除</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <form role="form" method="post"
+                                              action="{% url 'case_del' id=case.id %}">
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                <div class="text-center text-danger">正在删除 {{ case.name }}，删除后无法恢复，是否确定？
+                                                </div>
+                                                <input type="hidden" name="id" value="{{ case.id }}"/>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-danger">确定</button>
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">取消
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        {% endif %}
+
+                    </div>
+                    </div>
+                {% endblock %}
             </div>
         </div>
-        <div class="col-4">
-            <div id="card-api">
+        <div class="col-3">
+            <div id="card-case">
                 {% for api in apis %}
-				<div class="card">
-					<div class="card-header">
-						 <a class="card-link" data-toggle="collapse" data-parent="#card-api" href="#card-element-{{ api.id }}">{{ api.name }}---{{ api.ip }}:{{ api.port }}</a>
-					</div>
-					<div id="card-element-{{ api.id }}" class="collapse">
-						<div class="card-block">
-							{{ api.paths }}
-						</div>
-					</div>
-				</div>
+                    <div class="card">
+                        <div class="card-header">
+                            <a class="card-link" data-toggle="collapse" data-parent="#card-case"
+                               href="#card-element-{{ api.id }}">{{ api.name }}---{{ api.ip }}:{{ api.port }}</a>
+                        </div>
+                        <div id="card-element-{{ api.id }}" class="collapse">
+
+                            <code class="card-block json_code">
+                                {{ api.paths }}
+                            </code>
+                        </div>
+                    </div>
                 {% endfor %}
-			</div>
+            </div>
         </div>
     </div>
 {% endblock %}

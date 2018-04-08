@@ -25,6 +25,7 @@
                 </div>
                 <div class="form-group">
                     {{ form.paths.label_tag }}
+                    <button type="button" class="btn btn-success btn-sm" onclick="format_json()">验证并格式化</button>
                     {{ form.paths }}
                     <div class="text-danger">{{ form.paths.errors }}</div>
                 </div>
@@ -35,9 +36,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">保存</button>
                 <button type="reset" class="btn btn-danger">重置</button>
-                <a href="{% url 'api_management' %}">
-                    <button type="button" class="btn btn-secondary">取消</button>
-                </a>
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">取消</button>
             </form>
         </div>
     </div>
