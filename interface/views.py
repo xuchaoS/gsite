@@ -234,7 +234,7 @@ def _exec_case(case_id):
                 if res.status_code != 200:
                     result = False
                     break
-                trace.append('\tactual: %s' % res.text)
+                trace.append('\tactual: %s' % res.json())
                 actual = res.json()
                 result = _assert_result(expect, actual, trace)
                 if not result:
@@ -244,46 +244,51 @@ def _exec_case(case_id):
     return result, trace, '' if result else '在第 %d 步失败' % (i + 1)
 
 
-def _assert_result(expect, actual, trace):
+def _assert_result(expect, actual, trace=None):
     success = True
     if isinstance(expect, list) and isinstance(actual, list):
         if len(expect) != 0:
-            if len(actual) == 0:
+            if len(expect) > len(actual):
+                trace.append('\tFAIL: 预期元素个数: %d, 实际元素个数: %d ' % (len(expect), len(actual)))
                 success = False
             elif (isinstance(expect[0], list) and isinstance(actual[0], list)) or \
                     (isinstance(expect[0], dict) and isinstance(actual[0], dict)):
-                for expext_item in expect:
+                for expect_item in expect:
+                    trace.append('\t期望 %s 包含在 %s 中' % (expect_item, actual))
                     for actual_item in actual:
-                        if _assert_result(expext_item, actual_item, trace):
+                        if _assert_result(expect_item, actual_item, trace):
                             break
                     else:
+                        trace.append('\tFAIL %s 不包含在 %s 中' % (expect_item, actual))
                         success = False
             else:
-                for expext_item in expect:
+                for expect_item in expect:
+                    trace.append('\t期望 %s 包含在 %s 中' % (expect_item, actual))
                     for actual_item in actual:
-                        if expext_item == actual_item:
+                        if expect_item == actual_item:
                             break
                     else:
+                        trace.append('\tFAIL %s 不包含在 %s 中' % (expect_item, actual))
                         success = False
     elif isinstance(expect, dict) and isinstance(actual, dict):
         for key, value in expect.items():
-            trace.append('\tkey: %s, 预期: %s, 实际: %s' % (key, value, actual[key] if key in actual else ''))
+            trace.append('\tkey: %s, 预期: %r, 实际: %r' % (key, value, actual[key] if key in actual else ''))
             if key not in actual:
+                trace.append('\tFAIL key %s 不包含在 %s 中' % (key, actual))
                 success = False
+            elif type(value) != type(actual[key]):
+                trace.append('\tFAIL 类型不匹配 expect: %r, actual: %r' % (value, actual[key]))
+                success = False
+            elif isinstance(value, list):
+                if not _assert_result(value, actual[key], trace):
+                    success = False
+            elif isinstance(value, dict):
+                if not _assert_result(value, actual[key], trace):
+                    success = False
             else:
-                if isinstance(value, list):
-                    if not isinstance(actual[key], list):
-                        success = False
-                    elif not _assert_result(value, actual[key], trace):
-                        success = False
-                elif isinstance(value, dict):
-                    if not isinstance(actual[key], dict):
-                        success = False
-                    elif not _assert_result(value, actual[key], trace):
-                        success = False
-                else:
-                    if value != actual[key]:
-                        success = False
+                if value != actual[key]:
+                    trace.append('\tFAIL 不符合预期 expect: %s, actual: %s' % (value, actual[key]))
+                    success = False
     else:
         success = False
     return success
