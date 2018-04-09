@@ -31,5 +31,6 @@ urlpatterns = [
     path('api/edit/<int:id>', views.edit_api, name='api_edit'),
     path('api/del/<int:id>', views.del_api, name='api_del'),
     path('exec/case/<int:id>', views.exec_case, name='exec_case'),
+    path('exec/suite/<int:id>', views.exec_suite, name='exec_suite'),
     path('test/<slug:type>', views.test, name='test'),
 ]

@@ -201,8 +201,9 @@ def exec_case(request, id):
     return render(request, 'case.html', data)
 
 
-def _exec_case(case_id):
-    case = TestCase.objects.get(id=case_id)
+def _exec_case(case):
+    if not isinstance(case, TestCase):
+        case = TestCase.objects.get(id=case)
     content = json.loads(case.content)
     trace = []
     result = False
@@ -226,19 +227,21 @@ def _exec_case(case_id):
             elif method == 'post':
                 res = requests.post(url, data, headers=header)
             else:
-                res = None
-            if res:
-                trace.append('\tdata: %s' % data)
-                trace.append('\texpect: %s' % expect)
-                trace.append('\tstatus_code: %s' % res.status_code)
-                if res.status_code != 200:
-                    result = False
-                    break
-                trace.append('\tactual: %s' % res.json())
-                actual = res.json()
-                result = _assert_result(expect, actual, trace)
-                if not result:
-                    break
+                trace.append('\tFAIL 不支持的method: ' + method)
+                break
+            trace.append('\tdata: %s' % data)
+            trace.append('\texpect: %s' % expect)
+            trace.append('\tstatus_code: %s' % res.status_code)
+            if res.status_code != 200:
+                trace.append('\tFAIL 返回码不是200: %s %s url=%s' % (res.status_code, res.reason, res.url))
+                result = False
+                break
+            trace.append('\tactual: %s' % res.json())
+            actual = res.json()
+            result = _assert_result(expect, actual, trace)
+            if not result:
+                break
+            trace.append('步骤 %d 完成' % (i + 1))
     except Exception as e:
         trace.append(traceback.format_exc())
     return result, trace, '' if result else '在第 %d 步失败' % (i + 1)
@@ -292,6 +295,28 @@ def _assert_result(expect, actual, trace=None):
     else:
         success = False
     return success
+
+
+@login_required
+def exec_suite(request, id):
+    suite = TestSuite.objects.get(id=id)
+    cases = TestCase.objects.filter(suite=suite)
+    success = []
+    failed = []
+    for case in cases:
+        result, trace, msg = _exec_case(case)
+        if result:
+            success.append(case.name)
+        else:
+            failed.append(case.name)
+    data = {
+        'suite': suite,
+        'success': success,
+        'failed': failed,
+        'rate': '%.2f%%' % (len(success) * 100 / (len(success) + len(failed)))
+    }
+    return render(request, 'suite_result.html', data)
+
 
 
 def test(request, type):

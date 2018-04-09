@@ -1,0 +1,31 @@
+{% extends 'interface_base.html' %}
+
+{% block test_suite %}active{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center jumbotron">
+                <h3>执行套件 {{ suite }} 的用例通过率{{ rate }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 text-success">
+            <div class="jumbotron">
+                <h5 class="text-center">{{ success|length }}个用例通过</h5>
+                {% for i in success %}
+                    <div>{{ forloop.counter }}. {{ i }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-6 text-danger">
+            <div class="jumbotron">
+                <h5 class="text-center">{{ failed|length }}个用例失败</h5>
+                {% for i in failed %}
+                    <div>{{ forloop.counter }}. {{ i }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
