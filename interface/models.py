@@ -7,7 +7,7 @@ class Api(models.Model):
     name = models.CharField(max_length=50, unique=True)
     ip = models.GenericIPAddressField()
     port = models.IntegerField()
-    paths = models.TextField(default='{}')
+    paths = models.TextField(default='{"":{"path":"","method":"","note":""}}')
     note = models.TextField(blank=True)
 
     def __str__(self):
@@ -25,7 +25,7 @@ class TestSuite(models.Model):
 class TestCase(models.Model):
     name = models.CharField(max_length=50)
     suite = models.ForeignKey(TestSuite, on_delete=models.CASCADE)
-    content = models.TextField(default='[{}]')
+    content = models.TextField(default='[{"api":"","path":"","header":{},"data":{},"expect":{}}]')
     note = models.TextField(blank=True)
 
     class Meta:

@@ -30,7 +30,7 @@
                                     </div>
                                 </div>
                                 <div class="dropdown">
-                                    <button class="btn btn-outline-dark dropdown-toggle{% if not case_list %} disabled{% endif %}"
+                                    <button class="btn btn-outline-dark dropdown-toggle{% if not suite %} disabled{% endif %}"
                                             type="button" id="testcase"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         {% if case %}{{ case.name }}{% else %}请选择测试用例{% endif %}
@@ -38,7 +38,7 @@
                                     <div class="dropdown-menu" aria-labelledby="testcase">
                                         <a class="dropdown-item"
                                            href="{% url 'interface' %}?suite={{ suite.id }}">请选择测试用例...</a>
-                                        {% for c in case_list %}
+                                        {% for c in suite.testcase_set.all %}
                                             <a class="dropdown-item"
                                                href="{% url 'interface' %}?suite={{ suite.id }}&case={{ c.id }}">{{ c.name }}</a>
                                         {% endfor %}
@@ -93,47 +93,29 @@
 
 
                     <div class="row">
-                        <form role="form" class="container-fluid" method="post">
+                        <form role="form" class="container-fluid{% if not case %} disabled{% endif %}" method="post"{% if case %} action="{% url 'case_edit' id=case.id %}"{% endif %}>
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-8">
                                     <div class="form-group">
-                                        {% if form %}
                                             <div class="hidden" hidden>
                                                 {{ form.name }}
                                                 {{ form.suite }}
                                             </div>
                                             {{ form.content.label_tag }}
-                                            <button type="button" class="btn btn-success btn-sm"
+                                            <button type="button" class="btn btn-success btn-sm"{% if not case %} disabled{% endif %}
                                                     onclick="format_json()">验证并格式化
                                             </button>
                                             {{ form.content }}
                                             <div class="text-danger">{{ form.content.errors }}</div>
-                                        {% else %}
-                                            <label for="id_content">内容:</label>
-                                            <button type="button" class="btn btn-success btn-sm" disabled
-                                                    onclick="format_json()">验证并格式化
-                                            </button>
-                                            <textarea name="content" cols="40" rows="10" disabled
-                                                      class="form-control format_json" required
-                                                      id="id_content">[{}]</textarea>
-
-                                        {% endif %}
                                     </div>
 
                                 </div>
                                 <div class="col-4">
                                     <div class="form-group">
-                                        {% if form %}
                                             {{ form.note.label_tag }}
                                             {{ form.note }}
                                             <div class="text-danger">{{ form.note.errors }}</div>
-                                        {% else %}
-                                            <label for="id_note">备注:</label>
-                                            <textarea name="note" cols="40" rows="10" disabled class="form-control"
-                                                      required id="id_note"></textarea>
-
-                                        {% endif %}
                                     </div>
 
                                 </div>
@@ -155,7 +137,17 @@
 
                         </form>
                     </div>
+                    <br>
                     <div class="row">
+                    <div class="col-8">
+                        <label for="id_trance">执行日志:</label>
+                        <textarea name="note" cols="40" rows="10" class="form-control" id="id_trance" disabled>{% if trace %}{{ trace }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-4">
+                        <label for="id_trance">执行结果:</label>
+                        <textarea name="note" cols="40" rows="10" class="form-control" id="id_trance" disabled>{% if result %}{{ result }}{{ msg }}{% endif %}</textarea>
+
+                    </div>
                     </div>
                 {% endblock %}
             </div>

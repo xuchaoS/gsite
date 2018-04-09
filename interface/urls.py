@@ -30,6 +30,6 @@ urlpatterns = [
     path('api/add', views.add_api, name='api_add'),
     path('api/edit/<int:id>', views.edit_api, name='api_edit'),
     path('api/del/<int:id>', views.del_api, name='api_del'),
-    path('test', views.test, name='test'),
     path('exec/case/<int:id>', views.exec_case, name='exec_case'),
+    path('test/<slug:type>', views.test, name='test'),
 ]

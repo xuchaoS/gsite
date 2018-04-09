@@ -1,5 +1,7 @@
 $(document).ready(format_json);
 $(document).ready(json_code);
+$(document).ready(disable_form);
+
 function format_json() {
     $('textarea.format_json').each(function (i, o) {
         var o_data = o.value;
@@ -13,12 +15,17 @@ function format_json() {
     });
 }
 function json_code() {
-    console.log($('code.json_code'))
     $('code.json_code').each(function (i, o) {
         var o_data = o.innerText;
-        console.log(o_data)
         var j = JSON.parse(o_data);
-        console.log(j)
         o.innerText = JSON.stringify(j, null, 4);
     })
+}
+function disable_form() {
+    $('form.disabled input:not(:hidden)').each(function (i, o) {
+        o.disabled = true;
+    });
+    $('form.disabled textarea:not(:hidden)').each(function (i, o) {
+        o.disabled = true;
+    });
 }
