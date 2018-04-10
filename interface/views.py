@@ -236,7 +236,7 @@ def _exec_case(case):
                 trace.append('\tFAIL 返回码不是200: %s %s url=%s' % (res.status_code, res.reason, res.url))
                 result = False
                 break
-            trace.append('\tactual: %s' % res.json())
+            trace.append('\tactual: %s' % res.text)
             actual = res.json()
             result = _assert_result(expect, actual, trace)
             if not result:
@@ -247,7 +247,7 @@ def _exec_case(case):
     return result, trace, '' if result else '在第 %d 步失败' % (i + 1)
 
 
-def _assert_result(expect, actual, trace=None):
+def _assert_result(expect, actual, trace=None, recode=True):
     success = True
     if isinstance(expect, list) and isinstance(actual, list):
         if len(expect) != 0:
@@ -257,30 +257,33 @@ def _assert_result(expect, actual, trace=None):
             elif (isinstance(expect[0], list) and isinstance(actual[0], list)) or \
                     (isinstance(expect[0], dict) and isinstance(actual[0], dict)):
                 for expect_item in expect:
-                    trace.append('\t期望 %s 包含在 %s 中' % (expect_item, actual))
+                    trace.append('\t预期 %s 包含在 %s 中' % (format_str(expect_item), format_str(actual)))
                     for actual_item in actual:
-                        if _assert_result(expect_item, actual_item, trace):
+                        if _assert_result(expect_item, actual_item, trace, False):
                             break
                     else:
-                        trace.append('\tFAIL %s 不包含在 %s 中' % (expect_item, actual))
+                        trace.append('\tFAIL %s 不包含在 %s 中' % (format_str(expect_item), format_str(actual)))
                         success = False
             else:
                 for expect_item in expect:
-                    trace.append('\t期望 %s 包含在 %s 中' % (expect_item, actual))
+                    trace.append('\t预期 %s 包含在 %s 中' % (format_str(expect_item), format_str(actual)))
                     for actual_item in actual:
                         if expect_item == actual_item:
                             break
                     else:
-                        trace.append('\tFAIL %s 不包含在 %s 中' % (expect_item, actual))
+                        trace.append('\tFAIL %s 不包含在 %s 中' % (format_str(expect_item), format_str(actual)))
                         success = False
     elif isinstance(expect, dict) and isinstance(actual, dict):
         for key, value in expect.items():
-            trace.append('\tkey: %s, 预期: %r, 实际: %r' % (key, value, actual[key] if key in actual else ''))
+            if recode:
+                trace.append('\tkey: %s, 预期: %s, 实际: %s' % (key, repr(format_str(value)), repr(format_str(actual[key])) if key in actual else ''))
             if key not in actual:
-                trace.append('\tFAIL key %s 不包含在 %s 中' % (key, actual))
+                if recode:
+                    trace.append('\tFAIL key %s 不包含在 %s 中' % (key, format_str(actual)))
                 success = False
             elif type(value) != type(actual[key]):
-                trace.append('\tFAIL 类型不匹配 expect: %r, actual: %r' % (value, actual[key]))
+                if recode:
+                    trace.append('\tFAIL 类型不匹配 expect: %s, actual: %s' % (repr(format_str(value)), repr(format_str(actual[key]))))
                 success = False
             elif isinstance(value, list):
                 if not _assert_result(value, actual[key], trace):
@@ -290,11 +293,19 @@ def _assert_result(expect, actual, trace=None):
                     success = False
             else:
                 if value != actual[key]:
-                    trace.append('\tFAIL 不符合预期 expect: %s, actual: %s' % (value, actual[key]))
+                    if recode:
+                        trace.append('\tFAIL 不符合预期 expect: %s, actual: %s' % (format_str(value), format_str(actual[key])))
                     success = False
     else:
         success = False
     return success
+
+
+def format_str(s):
+    s = str(s)
+    if len(s) > 30:
+        return s[: 12] + '......' + s[-12:]
+    return s
 
 
 @login_required
@@ -316,7 +327,6 @@ def exec_suite(request, id):
         'rate': '%.2f%%' % (len(success) * 100 / (len(success) + len(failed)))
     }
     return render(request, 'suite_result.html', data)
-
 
 
 def test(request, type):

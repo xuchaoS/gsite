@@ -47,6 +47,7 @@ class ApiForm(forms.ModelForm):
                 'class': 'form-control'
             }),
         }
+        error_messages = {'name': {'unique': '已经存在相同名称的接口'}}
 
     clean_paths = clean_json('paths')
 
@@ -68,6 +69,7 @@ class SuiteForm(forms.ModelForm):
                 'class': 'form-control'
             }),
         }
+        error_messages = {'name': {'unique': '已经存在相同名称的套件'}}
 
 
 class CaseForm(forms.ModelForm):
