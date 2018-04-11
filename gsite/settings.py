@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'interface.apps.InterfaceConfig',
     'home.apps.HomeConfig',
     'account.apps.AccountConfig',
+    'machines.apps.MachinesConfig',
 ]
 
 MIDDLEWARE = [

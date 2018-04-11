@@ -1,0 +1,139 @@
+{% extends 'machines_base.html' %}
+
+{% block machines_management %}active{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-2">
+            <button class="btn btn-success text-white" type="button"
+                    onclick="window.location.href='{% url 'suite_add' %}'">添加
+            </button>
+        </div>
+        <div class="col-md-10 text-right">
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="text" name="keyword" value="{{ keyword }}"/>
+                <button class="btn btn-primary my-2 my-sm-0" type="submit">
+                    搜索
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        名称
+                    </th>
+                    <th>
+                        备注
+                    </th>
+                    <th>
+                        用例数
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for suite in suites %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {{ suite.name }}
+                        </td>
+                        <td>
+                            {{ suite.note }}
+                        </td>
+                        <td>
+                            {{ suite.testcase_set.count }}
+                        </td>
+                        <td>
+                            <a id="suite-detail-{{ forloop.counter }}" href="#suite-detail-{{ forloop.counter }}-container"
+                               role="button" class="btn btn-info btn-sm"
+                               data-toggle="modal">详情</a>
+                            <div class="modal fade" id="suite-detail-{{ forloop.counter }}-container" role="dialog"
+                                 aria-labelledby="myModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="myModalLabel">详情</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form role="form">
+                                                <div class="form-group">
+                                                    <label for="id_name_{{ forloop.counter }}">名称</label>
+                                                    <input type="text" value="{{ suite.name }}" class="form-control"
+                                                           disabled id="id_name_{{ forloop.counter }}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="id_note_{{ forloop.counter }}">备注</label>
+                                                    <textarea class="form-control" disabled
+                                                              id="id_note_{{ forloop.counter }}">{{ suite.note }}</textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal">确定
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-sm" type="button" {% if suite.testcase_set.count == 0 %}disabled{% endif %}
+                                    onclick="window.location.href='{% url 'exec_suite' id=suite.id %}'">
+                                执行
+                            </button>
+                            <button class="btn btn-primary btn-sm" type="button"
+                                    onclick="window.location.href='{% url 'suite_edit' id=suite.id %}'">
+                                编辑
+                            </button>
+                            <a id="suite-del-{{ suite.id }}" href="#suite-del-{{ suite.id }}-container" role="button"
+                               class="btn btn-danger btn-sm"
+                               data-toggle="modal">删除</a>
+                            <div class="modal fade" id="suite-del-{{ suite.id }}-container" role="dialog"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">删除</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <form role="form" method="post" action="{% url 'suite_del' id=suite.id %}">
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                <div class="text-center text-danger">正在删除 {{ suite.name }}，删除后无法恢复，是否确定？
+                                                </div>
+                                                <input type="hidden" name="id" value="{{ suite.id }}"/>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-danger">确定</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+

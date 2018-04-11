@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block machines %}active{% endblock %}
+
+{% block body %}
+    <div class="col-2">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% block machines_management %}{% endblock %}" href="{% url 'interface' %}">测试机器</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% block test_suite %}{% endblock %}" href="{% url 'suite_management' %}">性能监控</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% block api_management %}{% endblock %}" href="{% url 'api_management' %}">软件管理</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-10">
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+
+{% endblock %}

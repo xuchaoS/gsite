@@ -9,26 +9,17 @@ import traceback
 
 # Create your views here.
 
-@login_required
 def case_management(request):
     suite_id = request.GET.get('suite', '')
     case_id = request.GET.get('case', '')
-    if request.method == 'GET':
-        case = None
-        suite = None
-        if case_id:
-            case = TestCase.objects.get(id=case_id)
-        if suite_id:
-            suite = TestSuite.objects.get(id=suite_id)
-        data = _gen_case_index_data(suite=suite, case=case)
-        return render(request, 'case.html', data)
-    else:
+    case = None
+    suite = None
+    if case_id:
         case = TestCase.objects.get(id=case_id)
-        form = CaseForm(request.POST, instance=case)
-        if form.is_valid():
-            form.save()
-        data = _gen_case_index_data(case=case, form=form)
-        return render(request, 'case.html', data)
+    if suite_id:
+        suite = TestSuite.objects.get(id=suite_id)
+    data = _gen_case_index_data(suite=suite, case=case)
+    return render(request, 'case.html', data)
 
 
 def _gen_case_index_data(suite=None, case=None, data=None, form=None):
@@ -100,7 +91,6 @@ def del_case(request, id):
     return redirect(reverse('case_management') + '?suite=%d' % case.suite.id)
 
 
-@login_required
 def api_management(request):
     keyword = request.GET.get('keyword', '')
     apis = Api.objects.filter(name__contains=keyword)
@@ -144,7 +134,6 @@ def del_api(request, id):
     return redirect('api_management')
 
 
-@login_required
 def suite_management(request):
     keyword = request.GET.get('keyword', '')
     suites = TestSuite.objects.filter(name__contains=keyword)
