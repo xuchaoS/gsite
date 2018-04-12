@@ -6,7 +6,7 @@
     <div class="col-2">
         <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-                <a class="nav-link {% block machines_management %}{% endblock %}" href="{% url 'interface' %}">测试机器</a>
+                <a class="nav-link {% block machines_management %}{% endblock %}" href="{% url 'machines_list' %}">测试机器</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {% block test_suite %}{% endblock %}" href="{% url 'suite_management' %}">性能监控</a>
